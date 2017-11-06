@@ -23,7 +23,7 @@ begin
   for i in (select dbid from dba_hist_sqltext where sql_id='&SQLID.')
   loop
     dbms_output.put_line('define DBID='||i.dbid);
-    dbms_output.put_line('@getplanawr_sqlstat');
+    dbms_output.put_line('@_getplanawr_sqlstat');
   end loop;
 end;
 /
@@ -44,7 +44,7 @@ begin
   for i in (select dbid from dba_hist_sqltext where sql_id='&SQLID.')
   loop
     dbms_output.put_line('define DBID='||i.dbid);
-    dbms_output.put_line('@getplanawr_ash');
+    dbms_output.put_line('@_getplanawr_ash');
   end loop;
 end;
 /
@@ -55,7 +55,7 @@ begin
   for i in (select dbid from dba_hist_sqltext where sql_id='&SQLID.')
   loop
     dbms_output.put_line('define DBID='||i.dbid);
-    dbms_output.put_line('@getplanawr_recsql');
+    dbms_output.put_line('@_getplanawr_recsql');
   end loop;
 end;
 /

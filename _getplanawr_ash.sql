@@ -1,7 +1,7 @@
 set lines 250
 alter session set nls_date_language='AMERICAN';
-column plsql_entry_object_id new_val plsql_id
-column plsql_entry_subprogram_id new_val plsql_sub_id
+column plsql_entry new_val plsql_id
+column plsql_subprog new_val plsql_sub_id
 
 prompt DBID=&DBID.
 

@@ -97,7 +97,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    --DB description
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'DB description',cname=>'db_desc',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
-   l_sql:=q'[select unique DB_NAME,dbid,version,host_name,platform_name from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id=']'||l_sql_id||q'[')]'||chr(10);
+   l_sql:=q'[select unique INSTANCE_NUMBER INST_ID, DB_NAME,dbid,version,host_name,platform_name from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id=']'||l_sql_id||q'[')]'||chr(10);
    prepare_script(l_sql,l_sql_id);
    print_table_html(l_sql,1000,'DB description');
    p(HTF.BR);
@@ -115,7 +115,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid||'; INST_ID: '||i.INSTANCE_NUMBER);
      l_sql:=l_sqlstat;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid,p_inst_id=>i.INSTANCE_NUMBER); 
-     print_table_html(l_sql,1000,'SQL statistics',p_style1 =>'awrc2',p_style2 =>'awrnc2',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1000,'SQL statistics',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
      p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
@@ -130,7 +130,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.BR);
    l_sql:=q'[select snap_id snap, name, datatype_string,to_char(last_captured,'yyyy/mm/dd hh24:mi:ss') last_captured, value_string from dba_hist_sqlbind where sql_id=']'||l_sql_id||q'[' order by snap_id,position;]'||chr(10);
    prepare_script(l_sql,l_sql_id);
-   print_table_html(l_sql,1000,'Bind values');
+   print_table_html(l_sql,1000,'Bind values',p_header=>50);
    p(HTF.BR);
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
    p(HTF.BR);
@@ -167,7 +167,11 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    
    select x.sql_text into l_sql from dba_hist_sqltext x where sql_id=l_sql_id and rownum=1;
    delete from plan_table;
-   execute immediate 'explain plan for '||chr(10)||l_sql;
+   begin
+     execute immediate 'explain plan for '||chr(10)||l_sql;
+   exception
+     when others then p(sqlerrm);
+   end;
    
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'Explain plan (simple)',cname=>'ep_simple',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    l_sql:=q'[select * from table(dbms_xplan.display());]'||chr(10);
@@ -226,7 +230,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid);
      l_sql:=l_ash_summ;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1500,'ASH summary',p_style1 =>'awrc2',p_style2 =>'awrnc2',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1500,'ASH summary',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
 	 p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
@@ -245,7 +249,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid);
      l_sql:=l_ash_p1;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P1',p_style1 =>'awrc1',p_style2 =>'awrnc1',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P1',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
 	 p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
@@ -263,7 +267,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid);
      l_sql:=l_ash_p1_1;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P1.1',p_style1 =>'awrc1',p_style2 =>'awrnc1',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P1.1',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
 	 p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
@@ -281,7 +285,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid);
      l_sql:=l_ash_p2;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P2',p_style1 =>'awrc1',p_style2 =>'awrnc1',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P2',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
 	 p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
@@ -299,7 +303,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      p('DBID: '||i.dbid);
      l_sql:=l_ash_p3;
      prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P3',p_style1 =>'awrc1',p_style2 =>'awrnc1',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'));
+     print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P3',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50);
 
      p(HTF.BR);
      p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));

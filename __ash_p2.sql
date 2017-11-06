@@ -11,7 +11,7 @@ SELECT s_tot.sql_plan_hash_value plan_hash_value,
        to_char(s_tot.SQL_EXEC_START,'yyyy/mm/dd hh24:mi:ss') SQL_EXEC_START,
        plan.id,
        LPAD(' ', depth) || plan.operation || ' ' || plan.options ||
-       NVL2(plan.object_name, ' {' || plan.object_name || '}', null) pl_operation,
+       NVL2(plan.object_name, ' (' || plan.object_name || ')', null) pl_operation,
      case when summ.event is null and summ.smpl_cnt is not null then 'CPU' else summ.event end event,
        summ.smpl_cnt*10 tim, round(100*summ.smpl_cnt/s_tot.smpl_cnt,2) tim_pct
   FROM dba_hist_sql_plan plan, 
