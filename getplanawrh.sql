@@ -17,13 +17,14 @@ set serveroutput on
 spool awr_~SQLID..html
 
 @@_getplanawrh
+/
 
 spool off
 set serveroutput off
 set define &   
 
 spool _tmp_awr_rec_sql_&SQLID..sql
-select 'host mkdir awr_&SQLID._recursive_sqls'||chr(10)||'@getplanawrh ' ||sql_id||chr(10)||'host move awr_'||sql_id||'.txt .\awr_&SQLID._recursive_sqls'
+select 'host mkdir awr_&SQLID._recursive_sqls'||chr(10)||'@getplanawrh ' ||sql_id||chr(10)||'host move awr_'||sql_id||'.html .\awr_&SQLID._recursive_sqls'
   from (select sql_id, count(1) cnt
           from dba_hist_active_sess_history
          where top_level_sql_id = '&SQLID'

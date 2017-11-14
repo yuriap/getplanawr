@@ -6,7 +6,7 @@ declare
 begin
   loop
     l_eof:=instr(l_text,chr(10));
-	p(rtrim(rtrim(substr(l_text,1,l_eof),chr(13)),chr(10)));
+    p(rtrim(rtrim(substr(l_text,1,l_eof),chr(13)),chr(10)));
     l_text:=substr(l_text,l_eof+1);  l_iter:=l_iter+1;
     exit when l_iter>1000 or dbms_lob.getlength(l_text)=0;
   end loop;
@@ -19,6 +19,6 @@ begin
           and key1='&1' order by PERIOD_START_TIME desc)
 where rownum<=10) loop
     print_text_as_table(i.x);
-	p('.');
+    p('.');
   end loop;
 end;

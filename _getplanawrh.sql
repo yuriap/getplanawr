@@ -3,49 +3,50 @@ declare
   l_sql clob;
   l_plsql_output clob;
   l_sql_id varchar2(100):='~SQLID';
+  l_crsr sys_refcursor;
   
   l_css clob:=
 q'{
 @@awr.css
 }';
-
+--^'||q'^
   l_sqlstat clob:=
 q'{
 @@__sqlstat.sql
 }';
-
+--^'||q'^
   l_ash_summ clob := 
 q'[
 @@__ash_summ
 ]';
-
+--^'||q'^
   l_ash_p1 clob := 
 q'[
 @@__ash_p1
 ]';
-
+--^'||q'^
   l_ash_p1_1 clob := 
 q'[
 @@__ash_p1_1
 ]';
-
+--^'||q'^
   l_ash_p2 clob := 
 q'[
 @@__ash_p2
 ]';
-
+--^'||q'^
   l_ash_p3 clob := 
 q'[
 @@__ash_p3
 ]';
-
+--^'||q'^
   l_sqlmon_hist clob := 
 q'[
 @@__sqlmon_hist
 ]';
-
+--^'||q'^
 @@__procs.sql
-
+--^'||q'^
 begin
    p(HTF.HTMLOPEN);
    p(HTF.HEADOPEN);
@@ -82,13 +83,20 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#sql_mon_hist',ctext=>'SQL Monitor report history',cattributes=>'class="awr"')));
    p(HTF.BR);
    p(HTF.BR); 
-
+--^'||q'^
    --SQL TEXT
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'SQL text',cname=>'sql_text',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
    l_sql:=q'[select x.sql_text text from dba_hist_sqltext x where sql_id=']'||l_sql_id||q'[' and rownum=1]'||chr(10);
    prepare_script(l_sql,l_sql_id);
-   print_table_html(l_sql,1000,'Full sql text');
+   open l_crsr for l_sql;
+   fetch l_crsr into l_plsql_output;
+   if l_crsr%found then
+     print_text_as_table(p_text=>l_plsql_output,p_t_header=>'SQL text',p_width=>1000);
+   else
+     print_text_as_table(p_text=>'No SQL data found.',p_t_header=>'SQL text',p_width=>500);
+   end if;   
+   close l_crsr;
    p(HTF.BR);
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
    p(HTF.BR);
@@ -104,7 +112,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
    p(HTF.BR);
    p(HTF.BR);     
-   
+--^'||q'^   
    --SQL statistics
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'SQL statistics',cname=>'sql_stat',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
@@ -136,7 +144,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.BR);
    p(HTF.BR);   
    
-   
+--^'||q'^   
    
    --AWR SQL execution plans
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR SQL execution plans',cname=>'awrplans',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -192,7 +200,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.BR);
    rollback;
    
-   
+--^'||q'^   
    
    
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'ASH',cname=>'ash',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -210,9 +218,13 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    for i in (select unique dbid from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id=l_sql_id) order by 1)
    loop
      p('DBID: '||i.dbid);
-     l_sql:=q'[select * from dba_procedures where (object_id,subprogram_id) in (select unique plsql_entry_object_id,plsql_entry_subprogram_id from dba_hist_active_sess_history where snap_id between &start_sn. and &end_sn. and sql_id = ']'||l_sql_id||q'[' and dbid= ]'||i.dbid||q'[)]'||chr(10);
-     prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1500,'ASH PL/SQL',p_style1 =>'awrc1',p_style2 =>'awrnc1');
+	 if sys_context('USERENV','CON_ID')=0 then --in multitenant it runs forever
+       l_sql:=q'[select * from dba_procedures where (object_id,subprogram_id) in (select unique plsql_entry_object_id,plsql_entry_subprogram_id from dba_hist_active_sess_history where instance_number between 1 and 255 and snap_id between &start_sn. and &end_sn. and sql_id = ']'||l_sql_id||q'[' and dbid= ]'||i.dbid||q'[)]'||chr(10);
+       prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
+       print_table_html(l_sql,1500,'ASH PL/SQL',p_style1 =>'awrc1',p_style2 =>'awrnc1');
+     else
+	   p('No PL/SQL source data for multitenant DB.');
+	 end if;
 
      p(HTF.BR);
 	 p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
@@ -221,7 +233,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    end loop;
    p(HTF.BR);
    p(HTF.BR);      
-   
+--^'||q'^   
    --ASH summary
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'ASH summary',cname=>'ash_summ',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
@@ -258,7 +270,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    end loop;
    p(HTF.BR);
    p(HTF.BR);  
-   
+--^'||q'^   
    --AWR ASH (SQL Monitor) P1.1
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR ASH (SQL Monitor) P1.1',cname=>'ash_p1.1',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
@@ -294,7 +306,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    end loop;
    p(HTF.BR);
    p(HTF.BR);
-
+--^'||q'^
    --AWR ASH (SQL Monitor) P3
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR ASH (SQL Monitor) P3',cname=>'ash_p3',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
@@ -333,5 +345,3 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p((HTF.BODYCLOSE));
    p((HTF.HTMLCLOSE));
 end;
-/
-
