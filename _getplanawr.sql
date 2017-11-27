@@ -14,7 +14,33 @@ define SQLID=&1
 
 column misn new_val start_sn noprint
 column masn new_val end_sn noprint
-select min(snap_id) misn, max(snap_id) masn from dba_hist_sqlstat where sql_id='&SQLID.' and dbid=(select dbid from dba_hist_sqltext where sql_id='&SQLID.');
+select min(snap_id) misn, 
+       max(snap_id) masn 
+ from dba_hist_sqlstat where sql_id='&SQLID.' and dbid=(select dbid from dba_hist_sqltext where sql_id='&SQLID.');
+
+select 
+       case when trim('&start_sn.') is null 
+              then 
+                (select min(snap_id) from dba_hist_snapshot
+                 where trunc(begin_interval_time, 'mi') >=(select trunc(max(end_interval_time) - 8, 'mi')
+                                                             from dba_hist_snapshot
+                                                            where instance_number = 1)
+                   and instance_number = 1) 
+			  else to_number('&start_sn.') end misn,
+       case when trim('&end_sn.') is null 
+              then (select max(snap_id) from dba_hist_snapshot where dbid=(select dbid from dba_hist_sqltext where sql_id='&SQLID.'))
+			  else to_number('&end_sn.') end masn
+from dual;
+
+column sn new_val c_start_sn noprint
+select case when &end_sn. < min(snap_id) then min(snap_id) else &end_sn. end sn
+  from dba_hist_snapshot
+ where trunc(begin_interval_time, 'mi') >=
+       (select trunc(end_interval_time - 8, 'mi')
+          from dba_hist_snapshot
+         where snap_id = &start_sn.
+           and instance_number = 1)
+   and instance_number = 1;
 
 set serveroutput on
 set feedback off
@@ -82,10 +108,14 @@ select x.sql_text text from dba_hist_sqltext x where sql_id='&SQLID' and rownum=
 prompt ===============================================================================
 select unique DB_NAME, dbid,version,host_name,platform_name from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id='&SQLID');
 prompt ===============================================================================
+prompt Snapshot range: start - &start_sn. (corrected &c_start_sn.); end - &end_sn.
+prompt ===============================================================================
 Prompt POE - per one exec, time in milliseconds (1/1000 of second)
 prompt ===============================================================================
 @_tmp_sqlstat.sql
 host del _tmp_sqlstat.sql
+
+spool awr_&SQLID..txt append
 
 column value_string format a200
 column NAME format a30
@@ -126,13 +156,21 @@ rollback;
 host del _tmp_awr_sql.txt
 
 set define on
+
+spool awr_&SQLID..txt append
+define start_sn=&c_start_sn.
+
 SET SQLBL OFF
 
 @_tmp_awrash.sql
 host del _tmp_awrash.sql
 
+spool awr_&SQLID..txt append
+
 @_tmp_rec1.sql
 host del _tmp_rec1.sql
+
+spool awr_&SQLID..txt append
 
 prompt ===================================== SQL MONITOR Hist(12c+) ====================================
 set serveroutput on
@@ -169,6 +207,9 @@ host del _tmp_awr_rec_sql_&SQLID..sql
 
 undefine SQLID
 undefine DBID
+undefine start_sn
+undefine c_start_sn
+undefine end_sn
 
 SET SQLBL OFF
 set termout on

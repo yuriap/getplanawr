@@ -6,7 +6,6 @@ set echo off
 set feedback off
 set verify off
 
-
 define SQLID=&1.
 
 set timing off
@@ -21,6 +20,13 @@ spool awr_~SQLID..html
 
 spool off
 set serveroutput off
+
+set heading off
+set echo off
+set verify off
+set timing off
+set feedback off
+
 set define &   
 
 spool _tmp_awr_rec_sql_&SQLID..sql
