@@ -9,6 +9,19 @@ set verify off
 define SQLID=&1.
 
 set timing off
+
+set define off
+variable l_awrcomp clob
+declare
+  l_script clob := 
+q'^
+@@_getcomph.sql
+^';
+begin
+  :l_awrcomp := replace(l_script||l_script1,'~','!');
+end;
+/
+
 set define ~
 
 set serveroutput on

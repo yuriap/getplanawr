@@ -1,5 +1,4 @@
 declare
-
   l_sql clob;
   l_plsql_output clob;
   l_sql_id varchar2(100):='~SQLID';
@@ -14,43 +13,58 @@ q'{
 q'{
 @@__sqlstat.sql
 }';
+
 --^'||q'^
+
   l_ash_summ clob := 
 q'[
 @@__ash_summ
 ]';
+
 --^'||q'^
+
   l_ash_p1 clob := 
 q'[
 @@__ash_p1
 ]';
+
 --^'||q'^
+
   l_ash_p1_1 clob := 
 q'[
 @@__ash_p1_1
 ]';
+
 --^'||q'^
+
   l_ash_p2 clob := 
 q'[
 @@__ash_p2
 ]';
+
 --^'||q'^
+
   l_ash_p3 clob := 
 q'[
 @@__ash_p3
 ]';
+
 --^'||q'^
+
   l_sqlmon_hist clob := 
 q'[
 @@__sqlmon_hist
 ]';
+
 --^'||q'^
+
    l_time number;
    l_cpu_tim number;
    
    l_timing boolean := true;
 
 @@__procs.sql
+
 --^'||q'^
 
    procedure stim is
@@ -63,7 +77,7 @@ q'[
    procedure etim is
    begin
      if l_timing then
-       p('Elapsed (sec): '||to_char(round((DBMS_UTILITY.GET_TIME-l_time)/100,2))||'; CPU (sec): '||to_char(round((DBMS_UTILITY.GET_CPU_TIME-l_cpu_tim)/100,2)));
+       p(HTF.header (6,cheader=>'Elapsed (sec): '||to_char(round((DBMS_UTILITY.GET_TIME-l_time)/100,2))||'; CPU (sec): '||to_char(round((DBMS_UTILITY.GET_CPU_TIME-l_cpu_tim)/100,2)),cattributes=>'class="awr"'));
      end if;
    end;
 
@@ -83,15 +97,22 @@ begin
    p(HTF.BR);
    p(HTF.header (2,cheader=>HTF.ANCHOR (curl=>'',ctext=>'Table of contents',cname=>'tblofcont',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
-p(HTF.header (4,cheader=>'Statistics',cattributes=>'class="awr"'));      
+   
+   p(HTF.header (4,cheader=>'Statistics',cattributes=>'class="awr"'));      
+   
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#sql_text',ctext=>'SQL text',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#db_desc',ctext=>'DB description',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#sql_stat',ctext=>'SQL statistics',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#binds',ctext=>'Bind values',cattributes=>'class="awr"')));
-p(HTF.header (4,cheader=>'Explain plan',cattributes=>'class="awr"'));   
+   
+   p(HTF.header (4,cheader=>'Explain plan',cattributes=>'class="awr"'));   
+   
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplans',ctext=>'AWR SQL execution plans',cattributes=>'class="awr"')));
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplanscomp',ctext=>'AWR SQL plans comparison',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#epplan',ctext=>'Explain plan',cattributes=>'class="awr"')));
-p(HTF.header (4,cheader=>'ASH',cattributes=>'class="awr"'));      
+   
+   p(HTF.header (4,cheader=>'ASH',cattributes=>'class="awr"'));      
+   
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'ASH',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_plsql',ctext=>'PL/SQL',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_summ',ctext=>'ASH summary',cattributes=>'class="awr"')));   
@@ -99,17 +120,20 @@ p(HTF.header (4,cheader=>'ASH',cattributes=>'class="awr"'));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_p1.1',ctext=>'AWR ASH (SQL Monitor) P1.1',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_p2',ctext=>'AWR ASH (SQL Monitor) P2',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_p3',ctext=>'AWR ASH (SQL Monitor) P3',cattributes=>'class="awr"')));
-p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));      
+   
+   p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));      
+   
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#sql_mon_hist',ctext=>'SQL Monitor report history',cattributes=>'class="awr"')));
    p(HTF.BR);
    p(HTF.BR); 
+   
 --^'||q'^
+
    --SQL TEXT
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'SQL text',cname=>'sql_text',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
    l_sql:=q'[select x.sql_text text from dba_hist_sqltext x where sql_id=']'||l_sql_id||q'[' and rownum=1]'||chr(10);
-   --prepare_script(l_sql,l_sql_id);
    open l_crsr for l_sql;
    fetch l_crsr into l_plsql_output;
    if l_crsr%found then
@@ -136,7 +160,9 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
    p(HTF.BR);
    p(HTF.BR);     
+   
 --^'||q'^   
+
    --SQL statistics
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'SQL statistics',cname=>'sql_stat',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -178,6 +204,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR SQL execution plans',cname=>'awrplans',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplanscomp',ctext=>'AWR SQL plans comparison',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#epplan',ctext=>'Explain plan',cattributes=>'class="awr"')));
    p(HTF.BR);   p(HTF.BR);   
    for i in (select unique dbid from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id=l_sql_id) order by 1)
@@ -194,7 +221,50 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    etim();
    p(HTF.BR);
    p(HTF.BR);
-   
+
+   --Comparsion
+   p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR SQL plans comparison',cname=>'awrplanscomp',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
+   p(HTF.BR);   
+   stim();   
+
+   for c in (select dbid, sql_id, min(snap_id) mi, max(snap_id) ma, count(unique plan_hash_value) cnt 
+               from dba_hist_sqlstat 
+              where plan_hash_value<>0 
+                and CPU_TIME_DELTA+ELAPSED_TIME_DELTA+BUFFER_GETS_DELTA+EXECUTIONS_DELTA>0 
+                and sql_id=l_sql_id             
+              group by dbid, sql_id
+             having count(unique plan_hash_value)>1)
+   loop
+
+     execute immediate    
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(
+        replace(:l_awrcomp
+                         ,'!dblnk.','')
+                         ,'!dbid1.',to_char(c.dbid))
+                         ,'!start_snap1.',to_char(c.mi-1))
+                         ,'!end_snap1.',to_char(c.ma))
+                         ,'!dbid2.',to_char(c.dbid))
+                         ,'!start_snap2.',to_char(c.mi-1))
+                         ,'!end_snap2.',to_char(c.ma))
+                         ,'!filter.',q'[sql_id=']'||l_sql_id||q'[']')
+                         ,'!sortcol.','ELAPSED_TIME_DELTA')
+                         ,'!sortlimit.','1')
+                         ,'!embeded.','TRUE');
+   end loop;
+   etim();   
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplans',ctext=>'Back to AWR SQL execution plans',cattributes=>'class="awr"')));
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
+   p(HTF.BR);   
+   p(HTF.BR);   
    
    --Explain plan
    stim();
@@ -205,9 +275,9 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
 
    p(HTF.BR);p(HTF.BR);
    
-   select x.sql_text into l_sql from dba_hist_sqltext x where sql_id=l_sql_id and rownum=1;
-   delete from plan_table;
    begin
+     select x.sql_text into l_sql from dba_hist_sqltext x where sql_id=l_sql_id and rownum=1;
+     delete from plan_table;
      execute immediate 'explain plan for '||chr(10)||l_sql;
    exception
      when others then p(sqlerrm);
@@ -237,7 +307,6 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    
 --^'||q'^   
    
-   
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'ASH',cname=>'ash',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
    p(HTF.BR);
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_plsql',ctext=>'PL/SQL',cattributes=>'class="awr"')));
@@ -247,6 +316,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_p2',ctext=>'AWR ASH (SQL Monitor) P2',cattributes=>'class="awr"')));
    p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash_p3',ctext=>'AWR ASH (SQL Monitor) P3',cattributes=>'class="awr"')));
    p(HTF.BR);p(HTF.BR);
+   
    --ASH PL/SQL
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'ASH PL/SQL',cname=>'ash_plsql',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -270,7 +340,9 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    etim();
    p(HTF.BR);
    p(HTF.BR);      
+   
 --^'||q'^   
+
    --ASH summary
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'ASH summary',cname=>'ash_summ',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -291,7 +363,6 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.BR);
    p(HTF.BR);   
    
-   
    --AWR ASH (SQL Monitor) P1
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR ASH (SQL Monitor) P1',cname=>'ash_p1',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -311,7 +382,9 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    etim();
    p(HTF.BR);
    p(HTF.BR);  
+   
 --^'||q'^   
+
    --AWR ASH (SQL Monitor) P1.1
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR ASH (SQL Monitor) P1.1',cname=>'ash_p1.1',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -351,7 +424,9 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    etim();
    p(HTF.BR);
    p(HTF.BR);
+   
 --^'||q'^
+
    --AWR ASH (SQL Monitor) P3
    stim();
    p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'AWR ASH (SQL Monitor) P3',cname=>'ash_p3',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
@@ -364,6 +439,7 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
      print_table_html(l_sql,1000,'AWR ASH (SQL Monitor) P3',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50,p_break_col=>'SQL_EXEC_START');
 
      p(HTF.BR);
+     p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
      p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
      p(HTF.BR);
    end loop;
@@ -377,7 +453,6 @@ p(HTF.header (4,cheader=>'SQL Monitor',cattributes=>'class="awr"'));
    p(HTF.BR);
    prepare_script(l_sqlmon_hist,'~SQLID',true);
    l_sqlmon_hist:=replace(l_sqlmon_hist,'procedure p(msg varchar2) is begin dbms_output.put_line(msg);end;','procedure p(msg varchar2) is begin :l_res:=:l_res||msg||chr(10);end;');
-   --p(l_sqlmon1);
    l_plsql_output:=null;
    begin
      execute immediate l_sqlmon_hist using in out l_plsql_output;
