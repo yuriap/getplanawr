@@ -1,5 +1,5 @@
 select SQL_EXEC_START,
-       max(sample_time) over(partition by SQL_EXEC_START, plan_hash_value) + 0 sql_exec_end,
+       to_char(max(sample_time) over(partition by SQL_EXEC_START, plan_hash_value) + 0, 'yyyy/mm/dd hh24:mi:ss') sql_exec_end,
        plan_hash_value, id, row_src, event, cnt,
        round(100 * cnt / sum(cnt) over(partition by SQL_EXEC_START, plan_hash_value), 2) tim_pct,
        round(100 * sum(cnt) over(partition by id, SQL_EXEC_START, plan_hash_value) / sum(cnt) over(partition by SQL_EXEC_START, plan_hash_value), 2) tim_id_pct   
@@ -10,7 +10,7 @@ select SQL_EXEC_START,
                nvl(event, 'CPU') event,
                count(1) cnt,
                max(sample_time) sample_time
-          from v$active_session_history
+          from gv$active_session_history
          where sql_id = '&SQLID'
          group by SQL_EXEC_START,
                   sql_plan_hash_value,

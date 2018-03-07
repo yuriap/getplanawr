@@ -440,18 +440,14 @@ begin
    p(HTF.BR);
    p('V$ASH totals by EXEC START DATE and PLAN STEP ID');
    p(HTF.BR);
-   for i in (select unique dbid from dba_hist_database_instance where dbid in (select dbid from dba_hist_sqltext where sql_id=l_sql_id) order by 1)
-   loop
-     p('DBID: '||i.dbid);
-     l_sql:=l_ash_p3;
-     prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid); 
-     print_table_html(l_sql,1500,'AWR ASH (SQL Monitor) P3',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50,p_break_col=>'SQL_EXEC_START');
+   l_sql:=l_ash_p3;
+   prepare_script(l_sql,l_sql_id); 
+   print_table_html(l_sql,1500,'AWR ASH (SQL Monitor) P3',p_style1 =>'awrncbbt',p_style2 =>'awrcbbt',p_search=>'PLAN_HASH',p_replacement=>HTF.ANCHOR (curl=>'#awrplan_\1',ctext=>'\1',cattributes=>'class="awr"'),p_header=>50,p_break_col=>'SQL_EXEC_START');
 
-     p(HTF.BR);
-     p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
-     p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
-     p(HTF.BR);
-   end loop;
+   p(HTF.BR);
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#ash',ctext=>'Back to ASH',cattributes=>'class="awr"')));
+   p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
+   p(HTF.BR);
    etim();
    p(HTF.BR);
    p(HTF.BR);   
