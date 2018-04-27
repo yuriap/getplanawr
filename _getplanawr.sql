@@ -117,10 +117,12 @@ host del _tmp_sqlstat.sql
 
 spool awr_&SQLID..txt append
 
+prompt Bind values
 column value_string format a200
 column NAME format a30
+set feedback on
 select snap_id snap, name, datatype_string,to_char(last_captured,'yyyy/mm/dd hh24:mi:ss') last_captured, value_string from dba_hist_sqlbind where sql_id='&SQLID' order by snap_id,position;
-
+set feedback off
 set pages 9999
 
 --select * from table(dbms_xplan.display_awr('&SQLID', null, '&dbid', 'ADVANCED'));

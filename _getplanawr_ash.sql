@@ -26,10 +26,10 @@ column START_TIM format a24
 column end_tim format a24
 prompt ===============================================================================		  
 set lines 500
-prompt AWR ASH (SQL Monitor) P1
-@@__ash_p1
+rem prompt AWR ASH (SQL Monitor) P1
+rem @@__ash_p1
  
-prompt AWR ASH (SQL Monitor) P1.1
+prompt AWR ASH (SQL Monitor) P1
 @@__ash_p1_1
 
 prompt ===============================================================================
