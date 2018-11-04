@@ -144,7 +144,7 @@ exception
   when others then   
     if DBMS_SQL.IS_OPEN(l_theCursor) then dbms_sql.close_cursor(l_theCursor);end if;
     p(p_query);
-    raise_application_error(-20000, 'print_table_html'||chr(10)||sqlerrm||chr(10));
+    raise_application_error(-20000, 'print_table_html'||chr(10)||sqlerrm||chr(10)||p_query);
 end;
     
 procedure print_text_as_table(p_text clob, p_t_header varchar2, p_width number, p_search varchar2 default null, p_replacement varchar2 default null, p_comparison boolean default false) is
