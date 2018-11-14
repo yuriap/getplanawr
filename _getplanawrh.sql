@@ -232,7 +232,7 @@ begin
          p('DBID: '||i.dbid);
          l_sql:=q'[select * from table(dbms_xplan.display_awr(']'||l_sql_id||q'[', null, ]'||i.dbid||q'[, 'ADVANCED'))]'||chr(10);
          prepare_script(l_sql,l_sql_id,p_dbid=>i.dbid);
-         print_table_html(l_sql,1000,'AWR SQL execution plans','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'#epplan_\1',ctext=>'Plan hash value: \1',cname=>'awrplan_\1',cattributes=>'class="awr"'));
+         print_table_html(l_sql,1500,'AWR SQL execution plans','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'#epplan_\1',ctext=>'Plan hash value: \1',cname=>'awrplan_\1',cattributes=>'class="awr"'));
          p(HTF.BR);
          p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplans',ctext=>'Back to AWR SQL execution plans',cattributes=>'class="awr"')));
          p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#tblofcont',ctext=>'Back to top',cattributes=>'class="awr"')));
@@ -312,7 +312,7 @@ begin
        p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'Explain plan (simple)',cname=>'ep_simple',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
        l_sql:=q'[select * from table(dbms_xplan.display());]'||chr(10);
        prepare_script(l_sql,l_sql_id);
-       print_table_html(l_sql,1000,'Explain plan','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'#epplanadv_\1',ctext=>'Plan hash value: \1',cname=>'epplan_\1',cattributes=>'class="awr"'));
+       print_table_html(l_sql,1500,'Explain plan','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'#epplanadv_\1',ctext=>'Plan hash value: \1',cname=>'epplan_\1',cattributes=>'class="awr"'));
        p(HTF.BR);p(HTF.BR);
        p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#epplan',ctext=>'Back to Explain plan',cattributes=>'class="awr"')));
        p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#awrplans',ctext=>'Back to AWR SQL execution plans',cattributes=>'class="awr"')));
@@ -321,7 +321,7 @@ begin
        p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'Explain plan (advanced)',cname=>'ep_adv',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
        l_sql:=q'[select * from table(dbms_xplan.display(null,null,'ADVANCED',null));]'||chr(10);
        prepare_script(l_sql,l_sql_id);
-       print_table_html(l_sql,1000,'Explain plan','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'',ctext=>'Plan hash value: \1',cname=>'epplanadv_\1',cattributes=>'class="awr"'));
+       print_table_html(l_sql,1500,'Explain plan','Plan hash value: ([[:digit:]]*)',HTF.ANCHOR(curl=>'',ctext=>'Plan hash value: \1',cname=>'epplanadv_\1',cattributes=>'class="awr"'));
        etim();
        p(HTF.BR);p(HTF.BR);
        p(HTF.LISTITEM(cattributes=>'class="awr"',ctext=>HTF.ANCHOR (curl=>'#epplan',ctext=>'Back to Explain plan',cattributes=>'class="awr"')));
