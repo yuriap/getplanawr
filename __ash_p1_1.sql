@@ -1,7 +1,7 @@
 select
-  x.*,
-  round(100 * tim / sum(tim) over(), 2) tim_pct,
-  round(100 * sum(tim) over(partition by id) / sum(tim) over(), 2) tim_id_pct
+  plan_hash_value,id,row_src "Row source",event,tim "Time",
+  round(100 * tim / sum(tim) over(partition by id) , 2) "Time, %",
+  round(100 * sum(tim) over(partition by id) / sum(tim) over(), 2) "Time by ID, %"
 from (
 select sql_plan_hash_value plan_hash_value,
        sql_plan_line_id id,
