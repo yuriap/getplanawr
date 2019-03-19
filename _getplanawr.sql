@@ -101,6 +101,7 @@ spool off
 set heading on
 rem set timing on
 
+define o_start_sn=&start_sn.
 
 spool awr_&SQLID..txt
 prompt SQL_ID=&SQLID
@@ -175,10 +176,12 @@ host del _tmp_rec1.sql
 spool awr_&SQLID..txt append
 
 prompt ===================================== SQL MONITOR Hist(12c+) ====================================
+define start_sn=&o_start_sn.
 set serveroutput on
 @__sqlmon_hist &SQLID.
 /
 set serveroutput off
+
 prompt ===============================================================================
 spool off
 

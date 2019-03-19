@@ -478,7 +478,9 @@ begin
    if l_sect_sql_mon_hst then 
        p(HTF.header (3,cheader=>HTF.ANCHOR (curl=>'',ctext=>'SQL Monitor report history (12c+)',cname=>'sql_mon_hist',cattributes=>'class="awr"'),cattributes=>'class="awr"'));
        p(HTF.BR);
-       prepare_script(l_sqlmon_hist,'~SQLID',true);
+       g_min := null;
+       g_max := null;
+       prepare_script(p_script => l_sqlmon_hist, p_sqlid => '~SQLID', p_plsql=> true, p_dbid => 0);
        l_sqlmon_hist:=replace(l_sqlmon_hist,'procedure p(msg varchar2) is begin dbms_output.put_line(msg);end;','procedure p(msg varchar2) is begin :l_res:=:l_res||msg||chr(10);end;');
        l_plsql_output:=null;
        begin
