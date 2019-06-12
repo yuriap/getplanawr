@@ -66,3 +66,4 @@ SET SQLBL OFF
 set termout on
 set verify on
 set feedback on
+set timing on
