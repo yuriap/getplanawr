@@ -92,6 +92,10 @@ q'[
 
 begin
    --select max(snap_id), min(snap_id) into g_max, g_min from dba_hist_snapshot where END_INTERVAL_TIME>sysdate-3;
+$IF DBMS_DB_VERSION.VERSION>19
+$THEN
+htf.set_html_escaping_mode('N');
+$END
    
    p(HTF.HTMLOPEN);
    p(HTF.HEADOPEN);
